@@ -1,0 +1,66 @@
+#include <stdio.h>
+
+int main() {
+    int frames[3], time[3];
+    int pages[] = {1,2,3,4,1,2,5,1,2,3,4,5};
+    int n = 12;
+    int i, j, k, pos, min;
+    int faults = 0, hits = 0, counter = 0;
+
+    // Initialize frames
+    for(i = 0; i < 3; i++) {
+        frames[i] = -1;
+    }
+
+    for(i = 0; i < n; i++) {
+        int found = 0;
+
+        // Check hit
+        for(j = 0; j < 3; j++) {
+            if(frames[j] == pages[i]) {
+                hits++;
+                counter++;
+                time[j] = counter;
+                found = 1;
+                break;
+            }
+        }
+
+        // If fault
+        if(found == 0) {
+            faults++;
+
+            // Find LRU
+            min = time[0];
+            pos = 0;
+
+            for(j = 1; j < 3; j++) {
+                if(time[j] < min) {
+                    min = time[j];
+                    pos = j;
+                }
+            }
+
+            frames[pos] = pages[i];
+            counter++;
+            time[pos] = counter;
+        }
+
+        // Print frames
+        printf("\nPage %d -> ", pages[i]);
+        for(k = 0; k < 3; k++) {
+            if(frames[k] != -1)
+                printf("%d ", frames[k]);
+            else
+                printf("- ");
+        }
+    }
+
+    printf("\n\nTotal Page Faults = %d", faults);
+    printf("\nTotal Page Hits = %d", hits);
+
+    printf("\nHit Percentage = %.2f%%", (hits/(float)n)*100);
+    printf("\nFault Percentage = %.2f%%\n", (faults/(float)n)*100);
+
+    return 0;
+}
